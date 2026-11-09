@@ -1,0 +1,1 @@
+This is my attempt to make a Rubik's Cube 2x2 Simulator. I made it because I like rubik's cubes.
