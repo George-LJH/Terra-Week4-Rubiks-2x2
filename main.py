@@ -3,7 +3,7 @@ from colorama import Fore, Back, Style, init
 import time
 import os
 import sys
-
+import random
 def getKey():
     if sys.platform == "win32":
         import msvcrt
@@ -36,19 +36,35 @@ def clearConsole():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 init(autoreset=True)
-
-frontFace = [[Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
-             [Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
-upFace = [[ Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
-          [ Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
-downFace = [[ Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
-            [ Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
-leftFace = [[  Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
-            [  Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,   Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
-rightFace = [["\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m" , "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m"],
-             [ "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m", "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m"]]
-backFace = [[ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
-            [ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
+debug = False
+if not debug:
+    
+    frontFace = [[Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
+                [Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
+    upFace = [[ Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
+            [ Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.GREEN + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
+    downFace = [[ Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
+                [ Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.BLUE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
+    leftFace = [[  Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
+                [  Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,   Fore.RED + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
+    rightFace = [["\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m" , "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m"],
+                [ "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m", "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■" + "\033[0m"]]
+    backFace = [[ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
+                [ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ]]
+else:
+    
+    frontFace = [[Fore.WHITE + Back.BLACK + Style.BRIGHT + "■00" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■01" + Style.RESET_ALL ],
+                [Fore.WHITE + Back.BLACK + Style.BRIGHT + "■10" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■11" + Style.RESET_ALL ]]
+    upFace = [[ Fore.GREEN + Back.BLACK + Style.BRIGHT + "■00" + Style.RESET_ALL , Fore.GREEN + Back.BLACK + Style.BRIGHT + "■01" + Style.RESET_ALL ],
+            [ Fore.GREEN + Back.BLACK + Style.BRIGHT + "■10" + Style.RESET_ALL ,  Fore.GREEN + Back.BLACK + Style.BRIGHT + "■11" + Style.RESET_ALL ]]
+    downFace = [[ Fore.BLUE + Back.BLACK + Style.BRIGHT + "■00" + Style.RESET_ALL ,  Fore.BLUE + Back.BLACK + Style.BRIGHT + "■01" + Style.RESET_ALL ],
+                [ Fore.BLUE + Back.BLACK + Style.BRIGHT + "■10" + Style.RESET_ALL ,  Fore.BLUE + Back.BLACK + Style.BRIGHT + "■11" + Style.RESET_ALL ]]
+    leftFace = [[  Fore.RED + Back.BLACK + Style.BRIGHT + "■00" + Style.RESET_ALL ,  Fore.RED + Back.BLACK + Style.BRIGHT + "■01" + Style.RESET_ALL ],
+                [  Fore.RED + Back.BLACK + Style.BRIGHT + "■10" + Style.RESET_ALL ,   Fore.RED + Back.BLACK + Style.BRIGHT + "■11" + Style.RESET_ALL ]]
+    rightFace = [["\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■00" + "\033[0m" , "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■01" + "\033[0m"],
+                [ "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■10" + "\033[0m", "\033[38;5;208m" + Back.BLACK + Style.BRIGHT + "■11" + "\033[0m"]]
+    backFace = [[ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■00" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■01" + Style.RESET_ALL ],
+                [ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■10" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "■11" + Style.RESET_ALL ]]
 # frontFace = [["⬜️","⬜️"],["⬜️","⬜️"]]
 # upFace = [["🟩","🟩"],["🟩","🟩"]]
 # downFace = [["🟦","🟦"],["🟦","🟦"]]
@@ -148,6 +164,37 @@ def U():
     leftFace = newLeftFace
     rightFace = newRightFace
     backFace = newBackFace
+def F():
+    global upFace, downFace, leftFace, rightFace, frontFace, backFace
+    newFrontFace = [[None, None], [None, None]]
+    newFrontFace[0][0] = frontFace[1][0]
+    newFrontFace[0][1] = frontFace[0][0]
+    newFrontFace[1][0] = frontFace[1][1]
+    newFrontFace[1][1] = frontFace[0][1]
+
+    newLeftFace = [[leftFace[0][0], None], [leftFace[1][0], None]]
+    newLeftFace[0][1] = downFace[0][0]
+    newLeftFace[1][1] = downFace[0][1]
+
+    newDownFace = [[None, None], [downFace[1][0], downFace[1][1]]]
+    newDownFace[0][0] = rightFace[1][0]
+    newDownFace[0][1] = rightFace[0][0]
+
+    newRightFace = [[None, rightFace[0][1]], [None, rightFace[1][1]]]
+    newRightFace[0][0] = upFace[1][0]
+    newRightFace[1][0] = upFace[1][1]
+
+    newUpFace = [[upFace[0][0], upFace[0][1]], [None, None]]
+    newUpFace[1][0] = leftFace[1][1]
+    newUpFace[1][1] = leftFace[0][1]
+
+    frontFace = newFrontFace
+    leftFace = newLeftFace
+    downFace = newDownFace
+    rightFace = newRightFace
+    upFace = newUpFace
+
+
 
 
 
@@ -162,12 +209,7 @@ def printCube():
     print(f"{indent}{downFace[1][0]} {downFace[1][1]}\n")
     print(f"{indent}{backFace[0][0]} {backFace[0][1]}")
     print(f"{indent}{backFace[1][0]} {backFace[1][1]}")
-
-clearConsole()
-while True:
-    printCube()
-    move = getKey()
-    clearConsole()
+def movement(move):
     if move == "R":
         R()
     elif move == "r":
@@ -186,5 +228,26 @@ while True:
         U()
         U()
         U()
+    elif move == "F":
+        F()
+    elif move == "f":
+        F()
+        F()
+        F()
+    elif move == "S":
+        scrambleSize = int(input("What is the scramble size?"))
+        scramble = []
+        for i in range(0,scrambleSize):
+            scramble.append(random.choice(["R","r","L","l","U","u","F","f"]))
+        for move in scramble:
+            print(move)
+            movement(move)
     else:
         print(f"Command {move} not recognized")
+
+clearConsole()
+while True:
+    printCube()
+    move = getKey()
+    clearConsole()
+    movement(move)
