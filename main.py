@@ -160,8 +160,8 @@ def printCube():
     print(f"{leftFace[1][0]} {leftFace[1][1]} {frontFace[1][0]} {frontFace[1][1]} {rightFace[1][0]} {rightFace[1][1]}\n")
     print(f"{indent}{downFace[0][0]} {downFace[0][1]}")
     print(f"{indent}{downFace[1][0]} {downFace[1][1]}\n")
-    print(f"{indent}{backFace[1][0]} {backFace[1][1]}")
     print(f"{indent}{backFace[0][0]} {backFace[0][1]}")
+    print(f"{indent}{backFace[1][0]} {backFace[1][1]}")
 
 clearConsole()
 while True:
