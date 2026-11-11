@@ -5,7 +5,7 @@ import os
 import sys
 import random
 
-debug = True
+debug = False
 def getKey():
     if sys.platform == "win32":
         import msvcrt
@@ -286,7 +286,7 @@ def movement(move):
         scrambleSize = int(input("What is the scramble size?"))
         scramble = []
         for i in range(0,scrambleSize):
-            scramble.append(random.choice(["R","r","L","l","U","u","F","f"]))
+            scramble.append(random.choice(["R","r","L","l","U","u","F","f", "B", "b", "D", "d"]))
         for move in scramble:
             print(move)
             movement(move)
