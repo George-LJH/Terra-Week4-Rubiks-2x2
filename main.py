@@ -4,6 +4,8 @@ import time
 import os
 import sys
 import random
+
+debug = True
 def getKey():
     if sys.platform == "win32":
         import msvcrt
@@ -36,7 +38,6 @@ def clearConsole():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 init(autoreset=True)
-debug = False
 if not debug:
     
     frontFace = [[Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL , Fore.WHITE + Back.BLACK + Style.BRIGHT + "■" + Style.RESET_ALL ],
@@ -193,11 +194,45 @@ def F():
     downFace = newDownFace
     rightFace = newRightFace
     upFace = newUpFace
+def B():
+    global upFace, downFace, leftFace, rightFace, frontFace, backFace
+    newBackFace = [[None, None], [None, None]]
+    newBackFace[0][0] = backFace[1][0]
+    newBackFace[1][0] = backFace[1][1]
+    newBackFace[1][1] = backFace[0][1]
+    newBackFace[0][1] = backFace[0][0]
 
+    newUpFace = [[None, None],[upFace[1][0], upFace[1][1]]]
+    newUpFace[0][0] = rightFace[0][1]
+    newUpFace[0][1] = rightFace[1][1]
 
+    newRightFace = [[rightFace[0][0], None], [rightFace[1][0], None]]
+    newRightFace[0][1] = downFace[1][1]
+    newRightFace[1][1] = downFace[1][0]
 
+    newDownFace = [[downFace[0][0], downFace[0][1]], [None, None]]
+    newDownFace[1][0] = leftFace[0][0]
+    newDownFace[1][1] = leftFace[1][0]
 
+    newLeftFace = [[None, leftFace[0][1]], [None, leftFace[1][1]]]
+    newLeftFace[0][0] = upFace[0][1]
+    newLeftFace[1][0] = upFace[0][0]
 
+    backFace = newBackFace
+    upFace = newUpFace
+    downFace = newDownFace
+    leftFace = newLeftFace
+    rightFace = newRightFace
+def D():
+    R()
+    L()
+    L()
+    L()
+    F()
+    L()
+    R()
+    R()
+    R()
 def printCube():
     global upFace, downFace, leftFace, rightFace, frontFace, backFace
     indent = "    "
@@ -210,6 +245,7 @@ def printCube():
     print(f"{indent}{backFace[0][0]} {backFace[0][1]}")
     print(f"{indent}{backFace[1][0]} {backFace[1][1]}")
 def movement(move):
+    global debug
     if move == "R":
         R()
     elif move == "r":
@@ -234,6 +270,18 @@ def movement(move):
         F()
         F()
         F()
+    elif move == "B":
+        B()
+    elif move == "b":
+        B()
+        B()
+        B()
+    elif move == "D":
+        D()
+    elif move == "d":
+        D()
+        D()
+        D()
     elif move == "S":
         scrambleSize = int(input("What is the scramble size?"))
         scramble = []
