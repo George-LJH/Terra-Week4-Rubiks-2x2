@@ -359,7 +359,7 @@ def movement(move):
         for move in scramble:
             movement(move)
     elif move == "1":
-        solveFirstFace()
+        solveCube()
     elif move == "2":
         def c(face, r, c):
             return getStickerColor(face[r][c])
@@ -376,10 +376,23 @@ def movement(move):
         print(f"    {c(downFace,0,0)} {c(downFace,0,1)}")
         print(f"    {c(downFace,1,0)} {c(downFace,1,1)}")
     elif move == "3":
-        for _ in range(4):
-            movement("D")
-            printCube()
-            time.sleep(0.5)
+        print(checkSune())
+    elif move == "4":
+        print(f"BACKFACE00{backFace[0][0]} BACKFACE01{backFace[0][1]} BACKFACE10{backFace[1][0]} BACKFACE11{backFace[1][1]}")
+    elif move == "5":
+        print(cubeSolved())
+    elif move == "6":
+        print(checkDiag())
+    elif move == "7":
+        print(checkOppOpp())
+    elif move == "8":
+        print(checkAdjAdj())
+    elif move == "9":
+        print(topSolved())
+    elif move == "0":
+        print(bottomSolved())
+    elif move == "!":
+        print(checkAdjOpp())
     else:
         print(f"Command {move} not recognized")
 
@@ -389,48 +402,109 @@ def bringWhiteToUFR():
         if getUFRWhiteFace():
             return True
         movement("U")
-    return False  # caller must handle this
-def solveFirstFace():
+    return False
+def solveCube():
     def doMove(m):
         movement(m)
         clearConsole()
-        # printCube()           # local ASCII render
-        buildCubeFaces()  # SVG render
-        time.sleep(0.5)
-    
-    for _ in range(4):
-        dfr_corner = [downFace[0][1], rightFace[1][0], frontFace[1][1]]
-        white_on_bottom = getStickerColor(dfr_corner[0]) == "W"
-        white_on_side = any(getStickerColor(s) == "W" for s in dfr_corner[1:])
+        # printCube()
+        buildCubeFaces()
+        time.sleep(0.1)
+    if not cubeSolved():
+        if not (getStickerColor(downFace[0][0]) == getStickerColor(downFace[0][1]) == getStickerColor(frontFace[1][0]) == getStickerColor(rightFace[1][0]) == getStickerColor(backFace[1][0]) == getStickerColor(leftFace[1][1]) == "W"):
+            for _ in range(4):
+                dfr_corner = [downFace[0][1], rightFace[1][0], frontFace[1][1]]
+                white_on_bottom = getStickerColor(dfr_corner[0]) == "W"
+                white_on_side = any(getStickerColor(s) == "W" for s in dfr_corner[1:])
+                
+                if white_on_side:
+                    doMove("R"); doMove("U"); doMove("r")
+                elif white_on_bottom:
+                    doMove("D")
+                    continue
+                
+                if not bringWhiteToUFR():
+                    doMove("R"); doMove("U"); doMove("r")
+                    bringWhiteToUFR()
+                
+                # insertUFRToDFR does multiple moves - expand it:
+                face = getUFRWhiteFace()
+                if face == "R":
+                    doMove("R"); doMove("U"); doMove("r")
+                elif face == "F":
+                    doMove("f"); doMove("u"); doMove("F")
+                elif face == "U":
+                    doMove("R"); doMove("U"); doMove("U"); doMove("r")
+                    doMove("u"); doMove("R"); doMove("U"); doMove("r")
+                
+                doMove("D")
+
+        clearConsole()
+        if not (getStickerColor(upFace[0][0]) == getStickerColor(upFace[0][1]) == getStickerColor(upFace[1][0]) == getStickerColor(upFace[1][1]) == "Y"):
+            for _ in range(4):
+                if checkAntisune():
+                    doMove("R"); doMove("u"); doMove("u"); doMove("r"); doMove("u"); doMove("R"); doMove("u"); doMove("r")
+                    # clearConsole()
+                elif checkSune():
+                    doMove("R"); doMove("U"); doMove("r"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("r")
+                    # clearConsole()
+                elif checkCar():
+                    doMove("R"); doMove("R"); doMove("U"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("R"); doMove("R")
+                elif checkBlinker():
+                    doMove("R"); doMove("U"); doMove("U"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R"); doMove("U"); doMove("U"); doMove("R")
+                    print(checkSune())
+                elif checkBowtie():
+                    doMove("F"); doMove("r"); doMove("f"); doMove("R"); doMove("U"); doMove("R"); doMove("u"); doMove("r");
+                elif checkChameleon():
+                    doMove("R"); doMove("U"); doMove("r"); doMove("u"); doMove("r"); doMove("F"); doMove("R"); doMove("f");
+                elif checkHeadlights():
+                    doMove("F"); doMove("R"); doMove("U"); doMove("r"); doMove("u"); doMove("f");
+                else:
+                    doMove("U")
+                clearConsole()
+        done = False
+        for i in range(4):
+            for j in range(4):
+                if checkAdj():
+                    doMove("r"); doMove("F"); doMove("R"); doMove("f"); doMove("R"); doMove("U"); doMove("U"); doMove("r"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("r");
+                    done = True
+                    break
+                elif checkDiag():
+                    doMove("R"); doMove("u"); doMove("r"); doMove("u"); doMove("F"); doMove("F"); doMove("u"); doMove("R"); doMove("U"); doMove("r"); doMove("U"); doMove("F"); doMove("F");
+                    # movement("R"); movement("u"); movement("r"); movement("u"); movement("F"); movement("F"); movement("u"); movement("R"); movement("U"); movement("r"); movement("U"); movement("F"); movement("F");
+                    done = True
+                    break
+                elif checkOppOpp():
+                    doMove("R"); doMove("R"); doMove("F"); doMove("F"); doMove("R"); doMove("R");
+                    done = True
+                    break
+                elif checkAdjAdj():
+                    doMove("R"); doMove("R"); doMove("u"); doMove("B"); doMove("B"); doMove("U"); doMove("U"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R");
+                    done = True
+                    break
+                elif checkAdjOpp():
+                    doMove("R"); doMove("u"); doMove("R"); doMove("F"); doMove("F"); doMove("r"); doMove("U"); doMove("r")
+                    done = True
+                    break
+                elif checkOppAdj():
+                    doMove("r"); doMove("D"); doMove("r"); doMove("F"); doMove("F"); doMove("R"); doMove("d"); doMove("R")
+                    done = True
+                    break
+                else:
+                    doMove("D")
         
-        if white_on_side:
-            doMove("R"); doMove("U"); doMove("r")
-        elif white_on_bottom:
-            doMove("D")
-            continue
-        
-        if not bringWhiteToUFR():
-            doMove("R"); doMove("U"); doMove("r")
-            bringWhiteToUFR()
-        
-        # insertUFRToDFR does multiple moves - expand it:
-        face = getUFRWhiteFace()
-        if face == "R":
-            doMove("R"); doMove("U"); doMove("r")
-        elif face == "F":
-            doMove("f"); doMove("u"); doMove("F")
-        elif face == "U":
-            doMove("R"); doMove("U"); doMove("U"); doMove("r")
-            doMove("u"); doMove("R"); doMove("U"); doMove("r")
-        
-        doMove("D")
-    for _ in range(4):
-        if checkSune():
-            doMove("R"); doMove("U"); doMove("R"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("r")
-            break
-        else:
-            doMove("U")
+                # clearConsole()
+            if done:
+                break
+            else:
+                doMove("U")
+
+
+    while not cubeSolved():
+        doMove("U")
     clearConsole()
+
+        
 
 def getSVG(frontFaceStr, upFaceStr, rightFaceStr):
     url = f"https://rubik-render.leoganpro.net/v1/cube/isometric/2x2x2/{frontFaceStr}-{upFaceStr}-{rightFaceStr}"
@@ -487,24 +561,183 @@ def buildCubeFaces():
     # print(f"Front Face: {frontFaceStr}, Up Face: {upFaceStr}, Right Face: {rightFaceStr}")
     # printCube()
     getSVG(frontFaceStr, upFaceStr, rightFaceStr)
-def checkSune():
-    # Check that ONLY the bottom-left top sticker is White (oriented)
+def checkAntisune():
     top_correct = (
-        getStickerColor(upFace[1][0]) == "Y" and
+        getStickerColor(upFace[0][1]) == "Y" and
         getStickerColor(upFace[0][0]) != "Y" and
-        getStickerColor(upFace[0][1]) != "Y" and
-        getStickerColor(upFace[1][1]) != "Y"
+        getStickerColor(upFace[1][1]) != "Y" and
+        getStickerColor(upFace[1][0]) != "Y"
     )
+    # print(upFace[0][0], upFace[0][1], "\n", upFace[1][0], upFace[1][1])
+    # print(top_correct)
     
-    # Check that the three twisted corners have White facing clockwise
     sides_correct = (
-        getStickerColor(frontFace[0][1]) == "Y" and  # Front-right corner
-        getStickerColor(rightFace[0][1]) == "Y" and  # Back-right corner
-        getStickerColor(backFace[0][1]) == "Y"     # Back-left corner
+        getStickerColor(frontFace[0][0]) == "Y" and
+        getStickerColor(rightFace[0][0]) == "Y" and
+        getStickerColor(leftFace[0][0]) == "Y"
     )
-    
+    # print(getStickerColor(frontFace[0][0]), getStickerColor(rightFace[0][0]), getStickerColor(backFace[0][0]))
+    # print(sides_correct)
     return top_correct and sides_correct
+def checkSune():
+    topCorrect = (
+        getStickerColor(upFace[1][0]) == "Y" and
+        getStickerColor(upFace[1][1]) != "Y" and
+        getStickerColor(upFace[0][0]) != "Y" and
+        getStickerColor(upFace[0][1]) != "Y"
+    )
+    # print(getStickerColor(upFace[1][0]))
+    # print(f"UPFACE00{upFace[0][0]} UPFACE01{upFace[0][1]} UPFACE10{upFace[1][0]} UPFACE11{upFace[1][1]}")
+    # print(f"TOP CORRECT: {topCorrect}")
+    sidesCorrect = (
+        getStickerColor(backFace[0][1]) == "Y" and
+        getStickerColor(rightFace[0][1]) == "Y" and
+        getStickerColor(frontFace[0][1]) == "Y"
+    )
+    # print(f"BACKFACE00{backFace[0][0]} BACKFACE01{backFace[0][1]} BACKFACE10{backFace[1][0]} BACKFACE11{backFace[1][1]}")
+    # print(f"RIGHTFACE00{rightFace[0][0]} RIGHTFACE01{rightFace[0][1]} RIGHTFACE10{rightFace[1][0]} RIGHTFACE11{rightFace[1][1]}")
+    # print(f"LEFTFACE00{leftFace[0][0]} LEFTFACE01{leftFace[0][1]} LEFTFACE10{leftFace[1][0]} LEFTFACE11{leftFace[1][1]}")
+    # print(f"BACKFACE01{backFace[0][1]} RIGHTFACE01{rightFace[0][1]} \nLEFTFACE01{leftFace[0][1]} LEFTFACE11{leftFace[1][1]} LEFTFACE10{leftFace[1][0]} LEFTFACE00{leftFace[0][0]}")
+    # print(f"SIDES CORRECT: {sidesCorrect}")
+    # input("Press Enter to continue...")
+    return topCorrect and sidesCorrect
+def checkCar():
+    sideCorrect = (
+        getStickerColor(frontFace[0][0]) == "Y" and
+        getStickerColor(frontFace[0][1]) == "Y" and
+        getStickerColor(backFace[0][1]) == "Y" and
+        getStickerColor(backFace[0][0]) == "Y"
+        )
+    return sideCorrect
+def checkBlinker():
+    sideCorrect = (
+        getStickerColor(leftFace[0][0]) == "Y" and
+        getStickerColor(leftFace[0][1]) == "Y" and
+        getStickerColor(frontFace[0][1]) == "Y" and
+        getStickerColor(backFace[0][0]) == "Y"
+    )
+    return sideCorrect
+def checkBowtie():
+    upCorrect = (
+        getStickerColor(upFace[0][0]) == "Y" and
+        getStickerColor(upFace[1][1]) == "Y")
+    sideCorrect = (
+        getStickerColor(frontFace[0][0]) == "Y" and
+        getStickerColor(rightFace[0][1]) == "Y"
+    )
 
+    return upCorrect and sideCorrect
+def checkChameleon():
+    upCorrect = (
+        getStickerColor(upFace[0][1]) == "Y" and
+        getStickerColor(upFace[1][1]) == "Y"
+    )
+    sideCorrect = (
+        getStickerColor(frontFace[0][0]) == "Y" and
+        getStickerColor(backFace[0][1]) == "Y"
+    )
+    return upCorrect and sideCorrect
+def checkHeadlights():
+    upCorrect = (
+        getStickerColor(upFace[0][1]) == "Y" and
+        getStickerColor(upFace[1][1]) == "Y"
+    )
+    sideCorrect = (
+        getStickerColor(leftFace[0][0]) == "Y" and
+        getStickerColor(leftFace[0][1]) == "Y"
+    )
+    return upCorrect and sideCorrect
+def checkAdj():
+    bottomCorrect = (
+        getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and 
+        getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
+        getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
+        getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
+    )
+    # print(
+    #     getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and 
+    #     getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
+    #     getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
+    #     getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
+    # )
+    topCorrect = (
+        getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
+    )
+    # print(
+    #     getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
+    # )
+    # input("Press Enter to continue..."  )
+    return bottomCorrect and topCorrect
+def checkDiag():
+    bottomCorrect = (
+        getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and 
+        getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
+        getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
+        getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
+    )
+    topCorrect = (
+        getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
+        getStickerColor(backFace[0][0]) != getStickerColor(backFace[0][1]) and
+        getStickerColor(rightFace[0][0]) != getStickerColor(rightFace[0][1]) and
+        getStickerColor(leftFace[0][0]) != getStickerColor(leftFace[0][1])
+    )
+    return bottomCorrect and topCorrect
+def checkOppOpp():
+    topCorrect = (
+        getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
+        getStickerColor(backFace[0][0]) != getStickerColor(backFace[0][1]) and
+        getStickerColor(rightFace[0][0]) != getStickerColor(rightFace[0][1]) and
+        getStickerColor(leftFace[0][0]) != getStickerColor(leftFace[0][1])
+    )
+    bottomCorrect = (
+        getStickerColor(frontFace[1][0]) != getStickerColor(frontFace[1][1]) and
+        getStickerColor(backFace[1][0]) != getStickerColor(backFace[1][1]) and
+        getStickerColor(rightFace[1][0]) != getStickerColor(rightFace[1][1]) and
+        getStickerColor(leftFace[1][0]) != getStickerColor(leftFace[1][1])
+    )
+    return topCorrect and bottomCorrect
+def checkAdjAdj():
+    topCorrect = (
+        getStickerColor(backFace[0][0]) == getStickerColor(backFace[0][1])
+    )
+    bottomCorrect = (
+        getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1])
+    )
+    return bottomCorrect and topCorrect
+def checkAdjOpp():
+    topCorrect = (
+        getStickerColor(frontFace[0][0]) == getStickerColor(frontFace[0][1])
+    )
+    bottomCorrect = not bottomSolved()
+    return bottomCorrect and topCorrect
+def checkOppAdj():
+    bottomCorrect = (
+        getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1])
+    )
+    topCorrect = not topSolved()
+    return bottomCorrect and topCorrect
+
+def cubeSolved():
+    return (
+        getStickerColor(upFace[0][0]) == getStickerColor(upFace[0][1]) == getStickerColor(upFace[1][0]) == getStickerColor(upFace[1][1]) and
+        getStickerColor(downFace[0][0]) == getStickerColor(downFace[0][1]) == getStickerColor(downFace[1][0]) == getStickerColor(downFace[1][1]) and
+        getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1]) == getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1]) and
+        getStickerColor(rightFace[0][0]) == getStickerColor(rightFace[0][1]) == getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1])
+    )
+def bottomSolved():
+    return (
+        getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and
+        getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
+        getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
+        getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
+    )
+def topSolved():
+    return (
+        getStickerColor(frontFace[0][0]) == getStickerColor(frontFace[0][1]) and
+        getStickerColor(backFace[0][0]) == getStickerColor(backFace[0][1]) and
+        getStickerColor(rightFace[0][0]) == getStickerColor(rightFace[0][1]) and
+        getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
+    )
 clearConsole()
 initializeCube()
 while True:
