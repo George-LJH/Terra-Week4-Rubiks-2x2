@@ -393,6 +393,18 @@ def movement(move):
         print(bottomSolved())
     elif move == "!":
         print(checkAdjOpp())
+    elif move == "UP":
+        movement("R")
+        movement("l")
+    elif move == "DOWN":
+        movement("r")
+        movement("L")
+    elif move == "LEFT":
+        movement("U")
+        movement("d")
+    elif move == "RIGHT":
+        movement("u")
+        movement("D")
     else:
         print(f"Command {move} not recognized")
 
