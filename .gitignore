@@ -1,1 +1,4 @@
 *(playback).*
+*.sh
+/ollama
+test.*
