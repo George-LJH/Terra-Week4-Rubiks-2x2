@@ -467,42 +467,7 @@ def solveCube():
         if topSolved() and not bottomSolved():
             doMove("UP")
             doMove("UP")
-        done = False
-        for i in range(4):
-            for j in range(4):
-                if checkAdj():
-                    doMove("r"); doMove("F"); doMove("R"); doMove("f"); doMove("R"); doMove("U"); doMove("U"); doMove("r"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("r");
-                    done = True
-                    break
-                elif checkDiag():
-                    doMove("R"); doMove("u"); doMove("r"); doMove("u"); doMove("F"); doMove("F"); doMove("u"); doMove("R"); doMove("U"); doMove("r"); doMove("U"); doMove("F"); doMove("F");
-                    # movement("R"); movement("u"); movement("r"); movement("u"); movement("F"); movement("F"); movement("u"); movement("R"); movement("U"); movement("r"); movement("U"); movement("F"); movement("F");
-                    done = True
-                    break
-                elif checkOppOpp():
-                    doMove("R"); doMove("R"); doMove("F"); doMove("F"); doMove("R"); doMove("R");
-                    done = True
-                    break
-                elif checkAdjAdj():
-                    doMove("R"); doMove("R"); doMove("u"); doMove("B"); doMove("B"); doMove("U"); doMove("U"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R");
-                    done = True
-                    break
-                elif checkAdjOpp():
-                    doMove("R"); doMove("u"); doMove("R"); doMove("F"); doMove("F"); doMove("r"); doMove("U"); doMove("r")
-                    done = True
-                    break
-                elif checkOppAdj():
-                    doMove("r"); doMove("D"); doMove("r"); doMove("F"); doMove("F"); doMove("R"); doMove("d"); doMove("R")
-                    done = True
-                    break
-                else:
-                    doMove("D")
-        
-                # clearConsole()
-            if done:
-                break
-            else:
-                doMove("U")
+        PBL()
 
 
     for _ in range(4):
@@ -512,7 +477,49 @@ def solveCube():
 
     clearConsole()
 
-
+def PBL():
+    def doMove(m):
+        movement(m)
+        clearConsole()
+        # printCube()
+        buildCubeFaces()
+        time.sleep(0.1)
+    done = False
+    for i in range(5):
+        for j in range(5):
+            if checkAdj():
+                doMove("r"); doMove("F"); doMove("R"); doMove("f"); doMove("R"); doMove("U"); doMove("U"); doMove("r"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("r");
+                done = True
+                break
+            elif checkDiag():
+                doMove("R"); doMove("u"); doMove("r"); doMove("u"); doMove("F"); doMove("F"); doMove("u"); doMove("R"); doMove("U"); doMove("r"); doMove("U"); doMove("F"); doMove("F");
+                # movement("R"); movement("u"); movement("r"); movement("u"); movement("F"); movement("F"); movement("u"); movement("R"); movement("U"); movement("r"); movement("U"); movement("F"); movement("F");
+                done = True
+                break
+            elif checkOppOpp():
+                doMove("R"); doMove("R"); doMove("F"); doMove("F"); doMove("R"); doMove("R");
+                done = True
+                break
+            elif checkAdjAdj():
+                doMove("R"); doMove("R"); doMove("u"); doMove("B"); doMove("B"); doMove("U"); doMove("U"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R");
+                done = True
+                break
+            elif checkAdjOpp():
+                doMove("R"); doMove("u"); doMove("R"); doMove("F"); doMove("F"); doMove("r"); doMove("U"); doMove("r")
+                done = True
+                break
+            elif checkOppAdj():
+                doMove("r"); doMove("D"); doMove("r"); doMove("F"); doMove("F"); doMove("R"); doMove("d"); doMove("R")
+                done = True
+                break
+            else:
+                doMove("D")
+    
+            # clearConsole()
+        if done:
+            break
+        else:
+            doMove("U")
 def renderCube(frontFaceStr: str, upFaceStr: str, rightFaceStr: str, width: int = 50):
     colors = {
         "W": (255, 255, 255, 255),
@@ -684,19 +691,17 @@ def checkHeadlights():
     return upCorrect and sideCorrect
 def checkAdj():
     bottomCorrect = bottomSolved()
-    topUnsolved = not topSolved()
     barOnLeft = getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
-    return bottomCorrect and topUnsolved and barOnLeft
+    return bottomCorrect and barOnLeft
 def checkDiag():
     bottomCorrect = bottomSolved()
-    topUnsolved = not topSolved()
     noBarsOnTop = (
         getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
-        getStickerColor(backFace[0][0]) != getStickerColor(backFace[0][1]) and
+        getStickerColor(frontFace[0][1]) != getStickerColor(rightFace[0][0]) and
         getStickerColor(rightFace[0][0]) != getStickerColor(rightFace[0][1]) and
-        getStickerColor(leftFace[0][0]) != getStickerColor(leftFace[0][1])
+        getStickerColor(rightFace[0][1]) != getStickerColor(backFace[0][0])
     )
-    return bottomCorrect and topUnsolved and noBarsOnTop
+    return bottomCorrect and noBarsOnTop
 def checkOppOpp():
     topCorrect = (
         getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
