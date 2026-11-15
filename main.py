@@ -1,13 +1,9 @@
-
 from colorama import Fore, Back, Style, init
 import time
 import os
 import sys
 import random
-import requests
-import io
-import cairosvg
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 debug = False
@@ -75,17 +71,6 @@ def initializeCube():
         backFace = [[ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "██00" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "██01" + Style.RESET_ALL ],
                 [ Fore.YELLOW + Back.BLACK + Style.BRIGHT + "██10" + Style.RESET_ALL ,  Fore.YELLOW + Back.BLACK + Style.BRIGHT + "██11" + Style.RESET_ALL ]]
 
-# def getCorners():
-#     return {
-#         "UFR": [upFace[1][1], frontFace[0][1], rightFace[0][0]],
-#         "UFL": [upFace[1][0], leftFace[0][1],  frontFace[0][0]],
-#         "UBL": [upFace[0][0], backFace[0][1],  leftFace[0][0]],
-#         "UBR": [upFace[0][1], rightFace[0][1], backFace[0][0]],
-#         "DFR": [downFace[0][1], rightFace[1][0], frontFace[1][1]],
-#         "DFL": [downFace[0][0], frontFace[1][0], leftFace[1][1]],
-#         "DBL": [downFace[1][0], leftFace[1][0],  backFace[1][1]],
-#         "DBR": [downFace[1][1], backFace[1][0],  rightFace[1][1]],
-#     }
 def getStickerColor(providedSticker):
     sticker = str(providedSticker)
     if "37m" in sticker:
@@ -347,10 +332,10 @@ def movement(move):
         D()
         D()
         D()
-    elif move == "{":
-        debug = not debug
-        initializeCube()
-    elif move == "S":
+    # elif move == "{":
+    #     debug = not debug
+    #     initializeCube()
+    elif move == "s":
         initializeCube()
         scrambleSize = int(input("What is the scramble size?"))
         scramble = []
@@ -358,41 +343,43 @@ def movement(move):
             scramble.append(random.choice(["R","r","L","l","U","u","F","f", "B", "b", "D", "d"]))
         for move in scramble:
             movement(move)
-    elif move == "1":
+    elif move == "S":
         solveCube()
-    elif move == "2":
-        def c(face, r, c):
-            return getStickerColor(face[r][c])
+    # elif move == "2":
+    #     def c(face, r, c):
+    #         return getStickerColor(face[r][c])
         
-        print("      U")
-        print(f"    {c(upFace,0,0)} {c(upFace,0,1)}")
-        print(f"    {c(upFace,1,0)} {c(upFace,1,1)}")
-        print()
-        print("L        F        R        B")
-        print(f"{c(leftFace,0,0)} {c(leftFace,0,1)}   {c(frontFace,0,0)} {c(frontFace,0,1)}   {c(rightFace,0,0)} {c(rightFace,0,1)}   {c(backFace,0,0)} {c(backFace,0,1)}")
-        print(f"{c(leftFace,1,0)} {c(leftFace,1,1)}   {c(frontFace,1,0)} {c(frontFace,1,1)}   {c(rightFace,1,0)} {c(rightFace,1,1)}   {c(backFace,1,0)} {c(backFace,1,1)}")
-        print()
-        print("      D")
-        print(f"    {c(downFace,0,0)} {c(downFace,0,1)}")
-        print(f"    {c(downFace,1,0)} {c(downFace,1,1)}")
-    elif move == "3":
-        print(checkSune())
-    elif move == "4":
-        print(f"BACKFACE00{backFace[0][0]} BACKFACE01{backFace[0][1]} BACKFACE10{backFace[1][0]} BACKFACE11{backFace[1][1]}")
-    elif move == "5":
-        print(cubeSolved())
-    elif move == "6":
-        print(checkDiag())
-    elif move == "7":
-        print(checkOppOpp())
-    elif move == "8":
-        print(checkAdjAdj())
-    elif move == "9":
-        print(topSolved())
-    elif move == "0":
-        print(bottomSolved())
-    elif move == "!":
-        print(checkAdjOpp())
+    #     print("      U")
+    #     print(f"    {c(upFace,0,0)} {c(upFace,0,1)}")
+    #     print(f"    {c(upFace,1,0)} {c(upFace,1,1)}")
+    #     print()
+    #     print("L        F        R        B")
+    #     print(f"{c(leftFace,0,0)} {c(leftFace,0,1)}   {c(frontFace,0,0)} {c(frontFace,0,1)}   {c(rightFace,0,0)} {c(rightFace,0,1)}   {c(backFace,0,0)} {c(backFace,0,1)}")
+    #     print(f"{c(leftFace,1,0)} {c(leftFace,1,1)}   {c(frontFace,1,0)} {c(frontFace,1,1)}   {c(rightFace,1,0)} {c(rightFace,1,1)}   {c(backFace,1,0)} {c(backFace,1,1)}")
+    #     print()
+    #     print("      D")
+    #     print(f"    {c(downFace,0,0)} {c(downFace,0,1)}")
+    #     print(f"    {c(downFace,1,0)} {c(downFace,1,1)}")
+    # elif move == "3":
+    #     print(checkSune())
+    # elif move == "4":
+    #     print(f"BACKFACE00{backFace[0][0]} BACKFACE01{backFace[0][1]} BACKFACE10{backFace[1][0]} BACKFACE11{backFace[1][1]}")
+    # elif move == "5":
+    #     print(cubeSolved())
+    # elif move == "6":
+    #     print(checkDiag())
+    # elif move == "7":
+    #     print(checkOppOpp())
+    # elif move == "8":
+    #     print(checkAdjAdj())
+    # elif move == "9":
+    #     print(topSolved())
+    # elif move == "0":
+    #     print(bottomSolved())
+    # elif move == "!":
+    #     print(checkAdjOpp())
+    # elif move == "@":
+    #     print(checkAdj())
     elif move == "UP":
         movement("R")
         movement("l")
@@ -516,24 +503,60 @@ def solveCube():
         doMove("U")
     clearConsole()
 
-        
 
-def getSVG(frontFaceStr, upFaceStr, rightFaceStr):
-    url = f"https://rubik-render.leoganpro.net/v1/cube/isometric/2x2x2/{frontFaceStr}-{upFaceStr}-{rightFaceStr}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        SVGdat= response.text
-        renderCube(SVGdat)
-    
-    
-def renderCube(svg_string: str, width: int = 50):
-    # Convert SVG to PNG in memory
-    png_bytes = cairosvg.svg2png(bytestring=svg_string.encode("utf-8"))
-    img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+def renderCube(frontFaceStr: str, upFaceStr: str, rightFaceStr: str, width: int = 50):
+    colors = {
+        "W": (255, 255, 255, 255),
+        "G": (0, 200, 70, 255),
+        "B": (0, 100, 255, 255),
+        "R": (220, 30, 30, 255),
+        "Y": (255, 215, 0, 255),
+        "O": (255, 120, 0, 255),
+    }
 
-    # Calculate proportional height (must be even for half-block pairing)
-    aspect_ratio = img.height / img.width
-    height = int(width * aspect_ratio)
+    scale = 4
+    w_px = width * scale
+    h_px = int(w_px * 1.15)
+    if (h_px // scale) % 2 != 0:
+        h_px += scale
+
+    img = Image.new("RGBA", (w_px, h_px), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    cx, cy = w_px / 2.0, h_px / 2.0
+    s = w_px * 0.22
+    dx = s * 0.8660254
+    dy = s * 0.5
+
+    def pt(u, v, w):
+        return (cx + (w - u) * dx, cy + (u + w) * dy - v * s)
+
+    outline = (20, 20, 20, 255)
+    stroke = max(2, scale)
+
+    # upFaceStr order: [1][0], [0][0], [1][1], [0][1]
+    up_map = {
+        (1, 0): upFaceStr[0],
+        (0, 0): upFaceStr[1],
+        (1, 1): upFaceStr[2],
+        (0, 1): upFaceStr[3],
+    }
+    for r in range(2):
+        for c in range(2):
+            poly = [pt(r, 2, c), pt(r, 2, c + 1), pt(r + 1, 2, c + 1), pt(r + 1, 2, c)]
+            draw.polygon(poly, fill=colors[up_map[(r, c)]], outline=outline, width=stroke)
+
+    # frontFaceStr order: [0][0], [0][1], [1][0], [1][1]
+    for idx, (r, c) in enumerate([(0, 0), (0, 1), (1, 0), (1, 1)]):
+        poly = [pt(2, 2 - r, c), pt(2, 2 - r, c + 1), pt(2, 2 - r - 1, c + 1), pt(2, 2 - r - 1, c)]
+        draw.polygon(poly, fill=colors[frontFaceStr[idx]], outline=outline, width=stroke)
+
+    # rightFaceStr order: [0][0], [0][1], [1][0], [1][1]
+    for idx, (r, c) in enumerate([(0, 0), (0, 1), (1, 0), (1, 1)]):
+        poly = [pt(2 - c, 2 - r, 2), pt(2 - c - 1, 2 - r, 2), pt(2 - c - 1, 2 - r - 1, 2), pt(2 - c, 2 - r - 1, 2)]
+        draw.polygon(poly, fill=colors[rightFaceStr[idx]], outline=outline, width=stroke)
+
+    height = h_px // scale
     if height % 2 != 0:
         height += 1
 
@@ -572,7 +595,7 @@ def buildCubeFaces():
     rightFaceStr = getFaceColor(rightFace, 0, 0) + getFaceColor(rightFace, 0, 1) + getFaceColor(rightFace, 1, 0) + getFaceColor(rightFace, 1, 1)
     # print(f"Front Face: {frontFaceStr}, Up Face: {upFaceStr}, Right Face: {rightFaceStr}")
     # printCube()
-    getSVG(frontFaceStr, upFaceStr, rightFaceStr)
+    renderCube(frontFaceStr, upFaceStr, rightFaceStr)
 def checkAntisune():
     top_correct = (
         getStickerColor(upFace[0][1]) == "Y" and
@@ -598,20 +621,11 @@ def checkSune():
         getStickerColor(upFace[0][0]) != "Y" and
         getStickerColor(upFace[0][1]) != "Y"
     )
-    # print(getStickerColor(upFace[1][0]))
-    # print(f"UPFACE00{upFace[0][0]} UPFACE01{upFace[0][1]} UPFACE10{upFace[1][0]} UPFACE11{upFace[1][1]}")
-    # print(f"TOP CORRECT: {topCorrect}")
     sidesCorrect = (
         getStickerColor(backFace[0][1]) == "Y" and
         getStickerColor(rightFace[0][1]) == "Y" and
         getStickerColor(frontFace[0][1]) == "Y"
     )
-    # print(f"BACKFACE00{backFace[0][0]} BACKFACE01{backFace[0][1]} BACKFACE10{backFace[1][0]} BACKFACE11{backFace[1][1]}")
-    # print(f"RIGHTFACE00{rightFace[0][0]} RIGHTFACE01{rightFace[0][1]} RIGHTFACE10{rightFace[1][0]} RIGHTFACE11{rightFace[1][1]}")
-    # print(f"LEFTFACE00{leftFace[0][0]} LEFTFACE01{leftFace[0][1]} LEFTFACE10{leftFace[1][0]} LEFTFACE11{leftFace[1][1]}")
-    # print(f"BACKFACE01{backFace[0][1]} RIGHTFACE01{rightFace[0][1]} \nLEFTFACE01{leftFace[0][1]} LEFTFACE11{leftFace[1][1]} LEFTFACE10{leftFace[1][0]} LEFTFACE00{leftFace[0][0]}")
-    # print(f"SIDES CORRECT: {sidesCorrect}")
-    # input("Press Enter to continue...")
     return topCorrect and sidesCorrect
 def checkCar():
     sideCorrect = (
@@ -660,25 +674,11 @@ def checkHeadlights():
     )
     return upCorrect and sideCorrect
 def checkAdj():
-    bottomCorrect = (
-        getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and 
-        getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
-        getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
-        getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
-    )
-    # print(
-    #     getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and 
-    #     getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
-    #     getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
-    #     getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
-    # )
+    bottomCorrect = bottomSolved()
+    
     topCorrect = (
         getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
     )
-    # print(
-    #     getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
-    # )
-    # input("Press Enter to continue..."  )
     return bottomCorrect and topCorrect
 def checkDiag():
     bottomCorrect = (
@@ -753,7 +753,6 @@ def topSolved():
 clearConsole()
 initializeCube()
 while True:
-    # printCube()
     buildCubeFaces()
     move = getKey()
     clearConsole()

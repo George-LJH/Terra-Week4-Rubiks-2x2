@@ -13,8 +13,8 @@ This is my attempt to make a Rubik's Cube 2x2 Simulator. I made it because I lik
 * **l** - L' turn (Left counter-clockwise)
 * **B** - B turn (Back clockwise)
 * **b** - B' turn (Back counter-clockwise)
-* **1** - Solve Cube
-* **S** - Scramble Cube
+* **S** - Solve Cube
+* **s** - Scramble Cube
 * **Up Arrow** - Rotate Cube up
 * **Left Arrow** - Rotate Cube left
 * **Right Arrow** - Rotate Cube right
