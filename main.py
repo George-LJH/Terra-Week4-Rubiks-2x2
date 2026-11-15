@@ -336,13 +336,19 @@ def movement(move):
     #     debug = not debug
     #     initializeCube()
     elif move == "s":
-        initializeCube()
-        scrambleSize = int(input("What is the scramble size?"))
-        scramble = []
-        for i in range(0,scrambleSize):
-            scramble.append(random.choice(["R","r","L","l","U","u","F","f", "B", "b", "D", "d"]))
-        for move in scramble:
-            movement(move)
+        try:
+            scrambleSize = int(input("What is the scramble size? Enter 0 to undo.\n"))
+            if scrambleSize < 0:
+                raise ValueError
+        except ValueError:
+            print("Invalid input. Please enter digits above 0.")
+        if scrambleSize > 0:
+            initializeCube()
+            scramble = []
+            for i in range(0,scrambleSize):
+                scramble.append(random.choice(["R","r","L","l","U","u","F","f", "B", "b", "D", "d"]))
+            for move in scramble:
+                movement(move)
     elif move == "S":
         solveCube()
     # elif move == "2":
@@ -410,33 +416,30 @@ def solveCube():
         buildCubeFaces()
         time.sleep(0.1)
     if not cubeSolved():
-        if not (getStickerColor(downFace[0][0]) == getStickerColor(downFace[0][1]) == getStickerColor(frontFace[1][0]) == getStickerColor(rightFace[1][0]) == getStickerColor(backFace[1][0]) == getStickerColor(leftFace[1][1]) == "W"):
+                # 1. Orient all 4 White stickers onto downFace
+        if not (getStickerColor(downFace[0][0]) == getStickerColor(downFace[0][1]) == getStickerColor(downFace[1][0]) == getStickerColor(downFace[1][1]) == "W"):
             for _ in range(4):
-                dfr_corner = [downFace[0][1], rightFace[1][0], frontFace[1][1]]
-                white_on_bottom = getStickerColor(dfr_corner[0]) == "W"
-                white_on_side = any(getStickerColor(s) == "W" for s in dfr_corner[1:])
-                
-                if white_on_side:
-                    doMove("R"); doMove("U"); doMove("r")
-                elif white_on_bottom:
-                    doMove("D")
-                    continue
-                
-                if not bringWhiteToUFR():
-                    doMove("R"); doMove("U"); doMove("r")
-                    bringWhiteToUFR()
-                
-                # insertUFRToDFR does multiple moves - expand it:
-                face = getUFRWhiteFace()
-                if face == "R":
-                    doMove("R"); doMove("U"); doMove("r")
-                elif face == "F":
-                    doMove("f"); doMove("u"); doMove("F")
-                elif face == "U":
-                    doMove("R"); doMove("U"); doMove("U"); doMove("r")
-                    doMove("u"); doMove("R"); doMove("U"); doMove("r")
-                
+                if getStickerColor(downFace[0][1]) != "W":
+                    # Kick white out of DFR side if present
+                    if getStickerColor(frontFace[1][1]) == "W" or getStickerColor(rightFace[1][0]) == "W":
+                        doMove("R"); doMove("U"); doMove("r")
+                    
+                    # Bring a white sticker to UFR
+                    if not bringWhiteToUFR():
+                        doMove("R"); doMove("U"); doMove("r")
+                        bringWhiteToUFR()
+                    
+                    # Insert UFR white sticker into DFR
+                    face = getUFRWhiteFace()
+                    if face == "R":
+                        doMove("R"); doMove("U"); doMove("r")
+                    elif face == "F":
+                        doMove("f"); doMove("u"); doMove("F")
+                    elif face == "U":
+                        doMove("R"); doMove("U"); doMove("U"); doMove("r")
+                        doMove("u"); doMove("R"); doMove("U"); doMove("r")
                 doMove("D")
+
 
         clearConsole()
         if not (getStickerColor(upFace[0][0]) == getStickerColor(upFace[0][1]) == getStickerColor(upFace[1][0]) == getStickerColor(upFace[1][1]) == "Y"):
@@ -461,6 +464,9 @@ def solveCube():
                 else:
                     doMove("U")
                 clearConsole()
+        if topSolved() and not bottomSolved():
+            doMove("UP")
+            doMove("UP")
         done = False
         for i in range(4):
             for j in range(4):
@@ -499,8 +505,11 @@ def solveCube():
                 doMove("U")
 
 
-    while not cubeSolved():
+    for _ in range(4):
+        if cubeSolved():
+            break
         doMove("U")
+
     clearConsole()
 
 
@@ -675,25 +684,19 @@ def checkHeadlights():
     return upCorrect and sideCorrect
 def checkAdj():
     bottomCorrect = bottomSolved()
-    
-    topCorrect = (
-        getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
-    )
-    return bottomCorrect and topCorrect
+    topUnsolved = not topSolved()
+    barOnLeft = getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
+    return bottomCorrect and topUnsolved and barOnLeft
 def checkDiag():
-    bottomCorrect = (
-        getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and 
-        getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
-        getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1]) and
-        getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1])
-    )
-    topCorrect = (
+    bottomCorrect = bottomSolved()
+    topUnsolved = not topSolved()
+    noBarsOnTop = (
         getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
         getStickerColor(backFace[0][0]) != getStickerColor(backFace[0][1]) and
         getStickerColor(rightFace[0][0]) != getStickerColor(rightFace[0][1]) and
         getStickerColor(leftFace[0][0]) != getStickerColor(leftFace[0][1])
     )
-    return bottomCorrect and topCorrect
+    return bottomCorrect and topUnsolved and noBarsOnTop
 def checkOppOpp():
     topCorrect = (
         getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
@@ -709,33 +712,33 @@ def checkOppOpp():
     )
     return topCorrect and bottomCorrect
 def checkAdjAdj():
-    topCorrect = (
-        getStickerColor(backFace[0][0]) == getStickerColor(backFace[0][1])
-    )
-    bottomCorrect = (
+    return (
+        not bottomSolved() and not topSolved() and
+        getStickerColor(backFace[0][0]) == getStickerColor(backFace[0][1]) and
         getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1])
     )
-    return bottomCorrect and topCorrect
+
 def checkAdjOpp():
-    topCorrect = (
+    return (
+        not bottomSolved() and not topSolved() and
         getStickerColor(frontFace[0][0]) == getStickerColor(frontFace[0][1])
     )
-    bottomCorrect = not bottomSolved()
-    return bottomCorrect and topCorrect
+
 def checkOppAdj():
-    bottomCorrect = (
+    return (
+        not bottomSolved() and not topSolved() and
         getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1])
     )
-    topCorrect = not topSolved()
-    return bottomCorrect and topCorrect
-
 def cubeSolved():
     return (
         getStickerColor(upFace[0][0]) == getStickerColor(upFace[0][1]) == getStickerColor(upFace[1][0]) == getStickerColor(upFace[1][1]) and
         getStickerColor(downFace[0][0]) == getStickerColor(downFace[0][1]) == getStickerColor(downFace[1][0]) == getStickerColor(downFace[1][1]) and
+        getStickerColor(frontFace[0][0]) == getStickerColor(frontFace[0][1]) == getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and
+        getStickerColor(backFace[0][0]) == getStickerColor(backFace[0][1]) == getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
         getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1]) == getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1]) and
         getStickerColor(rightFace[0][0]) == getStickerColor(rightFace[0][1]) == getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1])
     )
+
 def bottomSolved():
     return (
         getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and
