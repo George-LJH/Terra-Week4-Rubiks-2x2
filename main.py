@@ -337,7 +337,7 @@ def movement(move):
     #     initializeCube()
     elif move == "s":
         try:
-            scrambleSize = int(input("What is the scramble size? Enter 0 to undo.\n"))
+            scrambleSize = int(input("What is the scramble size? Enter 0 to cancel.\n"))
             if scrambleSize < 0:
                 raise ValueError
         except ValueError:
@@ -350,6 +350,7 @@ def movement(move):
             for move in scramble:
                 movement(move)
     elif move == "S":
+        solveCube()
         solveCube()
     # elif move == "2":
     #     def c(face, r, c):
@@ -386,6 +387,25 @@ def movement(move):
     #     print(checkAdjOpp())
     # elif move == "@":
     #     print(checkAdj())
+    elif move == "#":
+        print(bottomSolved())
+        print(topSolved())
+        print(cubeSolved())
+        print(checkAdj())
+        print(checkDiag())
+        print(checkOppOpp())
+    elif move == "$":
+        if input("AUTO SCRAMBLE - SOLVER\nInput q to stop, any other key to continue.\n") == "q":
+            return
+
+        initializeCube()
+        scramble = []
+        for i in range(0,10):
+            scramble.append(random.choice(["R","r","L","l","U","u","F","f", "B", "b", "D", "d"]))
+        for move in scramble:
+            movement(move)
+        movement("S")
+        movement("$")
     elif move == "UP":
         movement("R")
         movement("l")
@@ -454,7 +474,7 @@ def solveCube():
                     doMove("R"); doMove("R"); doMove("U"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("R"); doMove("R")
                 elif checkBlinker():
                     doMove("R"); doMove("U"); doMove("U"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R"); doMove("u"); doMove("R"); doMove("R"); doMove("U"); doMove("U"); doMove("R")
-                    print(checkSune())
+                    # print(checkSune())
                 elif checkBowtie():
                     doMove("F"); doMove("r"); doMove("f"); doMove("R"); doMove("U"); doMove("R"); doMove("u"); doMove("r");
                 elif checkChameleon():
@@ -464,9 +484,6 @@ def solveCube():
                 else:
                     doMove("U")
                 clearConsole()
-        if topSolved() and not bottomSolved():
-            doMove("UP")
-            doMove("UP")
         PBL()
 
 
@@ -474,6 +491,7 @@ def solveCube():
         if cubeSolved():
             break
         doMove("U")
+
 
     clearConsole()
 
@@ -484,14 +502,19 @@ def PBL():
         # printCube()
         buildCubeFaces()
         time.sleep(0.1)
+    if topSolved() and not bottomSolved():
+        doMove("UP")
+        doMove("UP")
     done = False
     for i in range(5):
         for j in range(5):
             if checkAdj():
+                # input("checkAdj")
                 doMove("r"); doMove("F"); doMove("R"); doMove("f"); doMove("R"); doMove("U"); doMove("U"); doMove("r"); doMove("U"); doMove("R"); doMove("U"); doMove("U"); doMove("r");
                 done = True
                 break
             elif checkDiag():
+                # input("checkDiag")
                 doMove("R"); doMove("u"); doMove("r"); doMove("u"); doMove("F"); doMove("F"); doMove("u"); doMove("R"); doMove("U"); doMove("r"); doMove("U"); doMove("F"); doMove("F");
                 # movement("R"); movement("u"); movement("r"); movement("u"); movement("F"); movement("F"); movement("u"); movement("R"); movement("U"); movement("r"); movement("U"); movement("F"); movement("F");
                 done = True
@@ -667,7 +690,6 @@ def checkBowtie():
         getStickerColor(frontFace[0][0]) == "Y" and
         getStickerColor(rightFace[0][1]) == "Y"
     )
-
     return upCorrect and sideCorrect
 def checkChameleon():
     upCorrect = (
@@ -692,14 +714,14 @@ def checkHeadlights():
 def checkAdj():
     bottomCorrect = bottomSolved()
     barOnLeft = getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
-    return bottomCorrect and barOnLeft
+    return bottomCorrect and not topSolved() and barOnLeft
 def checkDiag():
     bottomCorrect = bottomSolved()
     noBarsOnTop = (
         getStickerColor(frontFace[0][0]) != getStickerColor(frontFace[0][1]) and
-        getStickerColor(frontFace[0][1]) != getStickerColor(rightFace[0][0]) and
-        getStickerColor(rightFace[0][0]) != getStickerColor(rightFace[0][1]) and
-        getStickerColor(rightFace[0][1]) != getStickerColor(backFace[0][0])
+        getStickerColor(rightFace[0][1]) != getStickerColor(rightFace[0][0]) and
+        getStickerColor(backFace[0][0]) != getStickerColor(backFace[0][1]) and
+        getStickerColor(leftFace[0][1]) != getStickerColor(leftFace[0][0])
     )
     return bottomCorrect and noBarsOnTop
 def checkOppOpp():
@@ -735,14 +757,8 @@ def checkOppAdj():
         getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1])
     )
 def cubeSolved():
-    return (
-        getStickerColor(upFace[0][0]) == getStickerColor(upFace[0][1]) == getStickerColor(upFace[1][0]) == getStickerColor(upFace[1][1]) and
-        getStickerColor(downFace[0][0]) == getStickerColor(downFace[0][1]) == getStickerColor(downFace[1][0]) == getStickerColor(downFace[1][1]) and
-        getStickerColor(frontFace[0][0]) == getStickerColor(frontFace[0][1]) == getStickerColor(frontFace[1][0]) == getStickerColor(frontFace[1][1]) and
-        getStickerColor(backFace[0][0]) == getStickerColor(backFace[0][1]) == getStickerColor(backFace[1][0]) == getStickerColor(backFace[1][1]) and
-        getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1]) == getStickerColor(leftFace[1][0]) == getStickerColor(leftFace[1][1]) and
-        getStickerColor(rightFace[0][0]) == getStickerColor(rightFace[0][1]) == getStickerColor(rightFace[1][0]) == getStickerColor(rightFace[1][1])
-    )
+    aligned = getStickerColor(frontFace[0][0]) == getStickerColor(frontFace[1][0])
+    return bottomSolved() and topSolved() and aligned
 
 def bottomSolved():
     return (
