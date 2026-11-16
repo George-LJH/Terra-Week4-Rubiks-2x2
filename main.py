@@ -7,6 +7,8 @@ from PIL import Image, ImageDraw
 
 
 debug = False
+
+
 def getKey():
     if sys.platform == "win32":
         import msvcrt
@@ -774,6 +776,13 @@ def topSolved():
         getStickerColor(rightFace[0][0]) == getStickerColor(rightFace[0][1]) and
         getStickerColor(leftFace[0][0]) == getStickerColor(leftFace[0][1])
     )
+clearConsole()
+print("--- TERMICUBE ---")
+print("A Rubik's 2x2 Simulator In The Terminal")
+print("--- Instructions ---")
+print("Use the following keys to manipulate the cube:\nR/r: Rotate Right face clockwise/counter-clockwise\nL/l: Rotate Left face clockwise/counter-clockwise\nU/u: Rotate Up face clockwise/counter-clockwise\nF/f: Rotate Front face clockwise/counter-clockwise\nB/b: Rotate Back face clockwise/counter-clockwise\nD/d: Rotate Down face clockwise/counter-clockwise\ns: Scramble the cube\nS: Solve the cube\nArrow keys: Rotate the cube in 3D space\n$: Auto scramble and solve the cube")
+print("USE ^C(CTRL+C) TO EXIT")
+input("Press Enter to continue...")
 clearConsole()
 initializeCube()
 while True:
